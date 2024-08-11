@@ -1,6 +1,6 @@
-package inc.anticbyte.moviepedia.data.remote
+package inc.anticbyte.moviepedia.data.repo
 
-import inc.anticbyte.moviepedia.data.remote.show.ShowDto
+import inc.anticbyte.moviepedia.data.remote.ShowDto
 import inc.anticbyte.moviepedia.di.IoDispatcher
 import inc.anticbyte.moviepedia.domain.repo.NetworkRepo
 import inc.anticbyte.moviepedia.utils.RequestState
@@ -19,9 +19,9 @@ class NetworkRepoImpl @Inject constructor(
     override suspend fun getShow(): RequestState<List<ShowDto>> {
         return withContext(io) {
             try {
-                val response = ktorClient.get("shows")
+                val response = ktorClient.get("showss")
                 if (response.status.isSuccess()) {
-                    RequestState.Success(response.body<List<ShowDto>>().subList(0,2))
+                    RequestState.Success(response.body())
                 } else {
                     RequestState.Error(response.status.description)
                 }

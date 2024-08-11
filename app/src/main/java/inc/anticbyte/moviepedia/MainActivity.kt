@@ -1,7 +1,6 @@
 package inc.anticbyte.moviepedia
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,15 +16,19 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
+import inc.anticbyte.moviepedia.data.remote.ShowDto
+import inc.anticbyte.moviepedia.presentation.component.AppSnackBar
+import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
 import inc.anticbyte.moviepedia.presentation.screens.ShowsViewModel
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
+import inc.anticbyte.moviepedia.utils.RequestState
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -34,28 +37,42 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val viewModel by viewModels<ShowsViewModel>()
-            val data by viewModel.showName.collectAsState()
-            val loading by viewModel.loading.collectAsState()
             val show by viewModel.show.collectAsState()
             val hostState = remember { SnackbarHostState() }
             MoviePediaTheme {
                 Scaffold(modifier = Modifier.fillMaxSize(), snackbarHost = {
-                    SnackbarHost(hostState = hostState)
+                    SnackbarHost(
+                        hostState = hostState,
+                        snackbar = { AppSnackBar(snackbarData = it) })
                 }) { innerPadding ->
 
                     Column(Modifier.padding(innerPadding)) {
-                        if (loading) {
-                            LoadingScreen()
-                        } else {
-                            LazyColumn(
-                                Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                items(data.size, key = {data[it].id}) {
-                                    Text(text = data[it].name)
+                        when (show) {
+                            RequestState.Loading -> {
+                                LoadingScreen()
+                            }
+
+                            is RequestState.Success -> {
+                                val showData = (show as RequestState.Success<List<ShowDto>>)
+                                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                                    items(showData.data.size) {
+                                        Text(
+                                            text = showData.data[it].name ?: "Hi"
+                                        )
+                                    }
                                 }
                             }
-                            Log.d("DataList", data.toString())
+
+                            is RequestState.Error -> {
+                                RequestState.Error("Something went wrong")
+                                LaunchedEffect(Unit) {
+                                    hostState.showSnackbar(
+                                        message = hostState.currentSnackbarData?.visuals?.message
+                                            ?: ""
+                                    )
+                                }
+                                ErrorScreen()
+                            }
                         }
                     }
                 }

@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import inc.anticbyte.moviepedia.data.remote.show.ShowDto
+import inc.anticbyte.moviepedia.data.remote.ShowDto
 import inc.anticbyte.moviepedia.di.IoDispatcher
 import inc.anticbyte.moviepedia.domain.repo.NetworkRepo
 import inc.anticbyte.moviepedia.utils.RequestState
@@ -29,35 +29,29 @@ class ShowsViewModel @Inject constructor(
     private val _show = MutableStateFlow<RequestState<List<ShowDto>>>(RequestState.Loading)
     val show: StateFlow<RequestState<List<ShowDto>>> = _show.asStateFlow()
 
-    private val _showName = MutableStateFlow(listOf(ShowDto()))
-    val showName: StateFlow<List<ShowDto>> = _showName.asStateFlow()
 
-    val loading = MutableStateFlow(true)
+
     private fun fetchShowData() {
         viewModelScope.launch {
-            try {
-                when (val showResponse = networkRepo.getShow()) {
-                    is RequestState.Success -> {
-                        if (showResponse.data.isEmpty()) {
-                            _show.emit(RequestState.Error("No data available"))
-                        } else {
-                            _show.emit(RequestState.Success(showResponse.data.subList(0,2)))
-                            _showName.tryEmit(showResponse.data)
-                            Log.d("DataList", showResponse.data.toString())
-                        }
+            when (val showResponse = networkRepo.getShow()) {
+                is RequestState.Success -> {
+                    if (showResponse.data.isEmpty()) {
+                        _show.emit(RequestState.Error("No data available"))
+                    } else {
+                        _show.emit(RequestState.Success(showResponse.data))
+                        Log.d("DataList", showResponse.data.toString())
                     }
-
-                    is RequestState.Error -> {
-                        _show.update { RequestState.Error(showResponse.message) }
-                    }
-
-                    RequestState.Loading -> loading.update { true }
                 }
-            } catch (e: Exception) {
-                _show.update { RequestState.Error("An error occurred: ${e.message}") }
-            } finally {
-                loading.update { false }
+
+                is RequestState.Error -> {
+                    _show.update { RequestState.Error(showResponse.message) }
+                }
+
+                RequestState.Loading -> {
+                    RequestState.Loading
+                }
             }
+
         }
     }
 
