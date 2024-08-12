@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import inc.anticbyte.moviepedia.R
 
 @Composable
-fun AppSnackBar(modifier: Modifier = Modifier, snackbarData: SnackbarData) {
-    Snackbar(modifier = modifier.padding(8.dp), shape = SnackbarDefaults.shape) {
+fun AppSnackBar(modifier: Modifier = Modifier, snackBarData: SnackbarData) {
+    Snackbar(modifier = modifier.padding(vertical = 8.dp, horizontal = 16.dp), shape = SnackbarDefaults.shape) {
         Text(text = stringResource(id = R.string.error_message_ui))
     }
 }

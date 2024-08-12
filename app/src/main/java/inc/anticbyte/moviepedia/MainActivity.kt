@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize(), snackbarHost = {
                     SnackbarHost(
                         hostState = hostState,
-                        snackbar = { AppSnackBar(snackbarData = it) })
+                        snackbar = { AppSnackBar(snackBarData = it) })
                 }) { innerPadding ->
 
                     Column(Modifier.padding(innerPadding)) {

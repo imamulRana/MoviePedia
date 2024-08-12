@@ -19,7 +19,7 @@ class NetworkRepoImpl @Inject constructor(
     override suspend fun getShow(): RequestState<List<ShowDto>> {
         return withContext(io) {
             try {
-                val response = ktorClient.get("showss")
+                val response = ktorClient.get("shows")
                 if (response.status.isSuccess()) {
                     RequestState.Success(response.body())
                 } else {
