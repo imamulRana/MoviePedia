@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import inc.anticbyte.moviepedia.data.remote.ShowDto
+import inc.anticbyte.moviepedia.presentation.component.AppBottomBar
 import inc.anticbyte.moviepedia.presentation.component.AppSnackBar
 import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
 import inc.anticbyte.moviepedia.presentation.screens.ShowsViewModel
@@ -44,7 +45,7 @@ class MainActivity : ComponentActivity() {
                     SnackbarHost(
                         hostState = hostState,
                         snackbar = { AppSnackBar(snackBarData = it) })
-                }) { innerPadding ->
+                }, bottomBar = { AppBottomBar()}) { innerPadding ->
 
                     Column(Modifier.padding(innerPadding)) {
                         when (show) {

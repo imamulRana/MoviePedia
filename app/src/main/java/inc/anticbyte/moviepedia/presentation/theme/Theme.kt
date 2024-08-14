@@ -51,7 +51,7 @@ fun MoviePediaTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = AlbertSansTypography,
         content = content
     )
 }
