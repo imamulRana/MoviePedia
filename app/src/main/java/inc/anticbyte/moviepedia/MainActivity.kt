@@ -14,7 +14,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -25,7 +24,9 @@ import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import inc.anticbyte.moviepedia.data.remote.ShowDto
 import inc.anticbyte.moviepedia.presentation.component.AppBottomBar
+import inc.anticbyte.moviepedia.presentation.component.AppCarouselCard
 import inc.anticbyte.moviepedia.presentation.component.AppSnackBar
+import inc.anticbyte.moviepedia.presentation.component.ShowsList
 import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
 import inc.anticbyte.moviepedia.presentation.screens.ShowsViewModel
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
                     SnackbarHost(
                         hostState = hostState,
                         snackbar = { AppSnackBar(snackBarData = it) })
-                }, bottomBar = { AppBottomBar()}) { innerPadding ->
+                }, bottomBar = { AppBottomBar() }) { innerPadding ->
 
                     Column(Modifier.padding(innerPadding)) {
                         when (show) {
@@ -55,11 +56,12 @@ class MainActivity : ComponentActivity() {
 
                             is RequestState.Success -> {
                                 val showData = (show as RequestState.Success<List<ShowDto>>)
-                                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    items(showData.data.size) {
-                                        Text(
-                                            text = showData.data[it].name ?: "Hi"
-                                        )
+                                LazyColumn {
+                                    item {
+                                        AppCarouselCard(showDto = showData.data.subList(0, 6))
+                                    }
+                                    item {
+                                        ShowsList(shows = showData.data)
                                     }
                                 }
                             }

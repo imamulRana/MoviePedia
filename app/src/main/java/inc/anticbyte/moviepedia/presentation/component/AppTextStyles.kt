@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 fun CarouselCardText(
@@ -15,7 +17,14 @@ fun CarouselCardText(
     movieYear: String
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = movieName, style = MaterialTheme.typography.titleLarge, color = Color.White)
-        Text(text = movieYear, style = MaterialTheme.typography.titleSmall, color = Color.White)
+        Text(
+            text = movieName,
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color.White,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 2,
+            textAlign = TextAlign.Center
+        )
+        Text(text = "($movieYear)", style = MaterialTheme.typography.bodyLarge, color = Color.White)
     }
 }

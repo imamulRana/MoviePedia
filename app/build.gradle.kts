@@ -66,6 +66,7 @@ dependencies {
     ksp(libs.hilt.compiler)
     //ktor
     implementation(libs.bundles.ktor)
+    implementation(libs.coil.compose)
     //test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

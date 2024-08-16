@@ -6,7 +6,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import inc.anticbyte.moviepedia.utils.API_URL
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.ANDROID
@@ -25,7 +25,7 @@ object NetworkModule {
     @Singleton
     @Provides
     fun provideKtorClient(): HttpClient {
-        return HttpClient(Android) {
+        return HttpClient(CIO) {
             defaultRequest {
                 url(API_URL)
             }
