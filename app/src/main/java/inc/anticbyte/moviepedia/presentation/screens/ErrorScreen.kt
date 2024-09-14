@@ -30,11 +30,8 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
             contentDescription = null
         )
         Spacer(modifier = modifier.height(16.dp))
-        Button(onClick = {
-
-        }, shape = SnackbarDefaults.shape) {
-            Text(text = stringResource(id = R.string.btn_retry).uppercase())
-        }
+        Button(onClick = {}, shape = SnackbarDefaults.shape)
+        { Text(text = stringResource(id = R.string.btn_retry).uppercase()) }
     }
 }
 

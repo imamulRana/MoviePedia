@@ -8,14 +8,13 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.4"
 activityCompose = "1.9.1"
-composeBom = "2024.06.00"
+composeBom = "2024.08.00"
 hiltAndroid = "2.51.1"
 ksp = "2.0.10-1.0.24"
 ktor = "2.3.12"
 slf4jAndroid = "1.7.36"
 androidxHilt = "1.2.0"
-
-
+composeNavigation = "2.8.0-rc01"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,6 +37,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-compose-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 hilt-navigation = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidxHilt" }
 
+#compose navigation
+androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 
 #hilt
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }

@@ -1,6 +1,7 @@
 package inc.anticbyte.moviepedia.data.remote
 
 
+import inc.anticbyte.moviepedia.domain.model.ShowDetailsUiState
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -170,4 +171,10 @@ data class ShowDto(
             val timezone: String? = null
         )
     }
+
+    fun toShowDetails(): ShowDetailsUiState = ShowDetailsUiState(
+        showId = this.id ?: 1,
+        showImage = this.image?.original ?: "No Image",
+        showName = this.name ?: "Name"
+    )
 }

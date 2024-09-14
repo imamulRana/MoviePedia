@@ -1,48 +1,47 @@
 package inc.anticbyte.moviepedia.presentation.component
 
+import android.util.Log
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import inc.anticbyte.moviepedia.R
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
+import inc.anticbyte.moviepedia.utils.NavigationItems
+import kotlin.math.log
 
 @Composable
-fun AppBottomBar(modifier: Modifier = Modifier) {
-    var selectedItem by rememberSaveable {
-        mutableIntStateOf(0)
-    }
-    var isSelected by remember {
-        mutableStateOf(false)
-    }
-    val navBarItems = listOf(
-        Pair(R.drawable.ic_home, "Home"), Pair(R.drawable.ic_bookmark, "Bookmark"),
-        Pair(R.drawable.ic_search, "Search"), Pair(R.drawable.ic_person, "Person")
-    )
+fun AppBottomBar(
+    modifier: Modifier = Modifier,
+    navController: NavController
+) {
+    val backStack by navController.currentBackStackEntryAsState()
+    val currentRoute = backStack?.destination?.route ?: NavigationItems.HOME.route
+
 
     NavigationBar {
-        navBarItems.forEach { navBarItem ->
-            NavigationBarItem(selected = selectedItem == navBarItems.indexOf(navBarItem),
-                onClick = {
-                    selectedItem = navBarItems.indexOf(navBarItem)
-                    isSelected = !isSelected
-                }, icon = {
+        NavigationItems.entries.forEach { navBarItem ->
+            val isSelected by remember(currentRoute) {
+                derivedStateOf { currentRoute == navBarItem.route::class.qualifiedName }
+            }
+            Log.d("CurrentRoute", "AppBottomBar: ${navBarItem.route::class.qualifiedName}")
+            NavigationBarItem(selected = isSelected,
+                onClick = { navController.navigate(navBarItem.route) },
+                icon = {
                     Icon(
-                        painter = painterResource(id = navBarItem.first),
-                        contentDescription = navBarItem.second
+                        painter = painterResource(id = navBarItem.icon),
+                        contentDescription = navBarItem.title
                     )
                 }, label = {
-                    Text(text = navBarItem.second)
+                    Text(text = navBarItem.title)
                 })
         }
     }
@@ -53,6 +52,6 @@ fun AppBottomBar(modifier: Modifier = Modifier) {
 @Composable
 private fun DefPrev() {
     MoviePediaTheme {
-        AppBottomBar()
+//        AppBottomBar()
     }
 }
