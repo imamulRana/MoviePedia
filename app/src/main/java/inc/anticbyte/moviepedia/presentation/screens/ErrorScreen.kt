@@ -1,11 +1,11 @@
 package inc.anticbyte.moviepedia.presentation.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.Text
@@ -19,20 +19,31 @@ import androidx.compose.ui.unit.dp
 import inc.anticbyte.moviepedia.R
 
 @Composable
-fun ErrorScreen(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+fun ErrorScreen(modifier: Modifier = Modifier, exception: Exception = Exception()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp)
     ) {
-        Image(
-            modifier = modifier.fillMaxSize(.7f),
-            painter = painterResource(id = R.drawable.error_robot),
-            contentDescription = null
-        )
-        Spacer(modifier = modifier.height(16.dp))
-        Button(onClick = {
+        Column(
+            modifier = modifier.align(Alignment.Center)
+        ) {
 
-        }, shape = SnackbarDefaults.shape) {
+            Image(
+                modifier = modifier
+                    .size(200.dp),
+                painter = painterResource(id = R.drawable.error_robot),
+                contentDescription = null
+            )
+            Text(
+                text = exception.message ?: "Something went wrong",
+            )
+        }
+        Button(
+            modifier = modifier.align(Alignment.BottomCenter),
+            onClick = {},
+            shape = SnackbarDefaults.shape
+        ) {
             Text(text = stringResource(id = R.string.btn_retry).uppercase())
         }
     }
@@ -41,5 +52,5 @@ fun ErrorScreen(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 private fun DefPrev() {
-    ErrorScreen()
+//    ErrorScreen()
 }

@@ -1,4 +1,4 @@
-package inc.anticbyte.moviepedia.data.local
+package inc.anticbyte.moviepedia.utils
 
 import inc.anticbyte.moviepedia.R
 

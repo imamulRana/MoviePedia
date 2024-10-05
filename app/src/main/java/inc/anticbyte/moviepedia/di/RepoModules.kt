@@ -4,8 +4,8 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import inc.anticbyte.moviepedia.data.repo.NetworkRepoImpl
-import inc.anticbyte.moviepedia.domain.repo.NetworkRepo
+import inc.anticbyte.moviepedia.data.repo.NetworkRepositoryImpl
+import inc.anticbyte.moviepedia.domain.repo.NetworkRepository
 import javax.inject.Singleton
 
 @Module
@@ -13,5 +13,5 @@ import javax.inject.Singleton
 interface RepoModules {
     @Binds
     @Singleton
-    fun bindNetworkRepo(impl: NetworkRepoImpl): NetworkRepo
+    fun bindNetworkRepo(impl: NetworkRepositoryImpl): NetworkRepository
 }
