@@ -1,15 +1,11 @@
 package inc.anticbyte.moviepedia.presentation.screens.movieDetail
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -17,8 +13,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,12 +27,12 @@ import inc.anticbyte.moviepedia.presentation.component.common.DetailTextSection
 import inc.anticbyte.moviepedia.presentation.component.common.MovieDetailMediaSection
 import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
 import inc.anticbyte.moviepedia.presentation.screens.LoadingScreen
-import inc.anticbyte.moviepedia.presentation.screens.ShowsViewModel
+import inc.anticbyte.moviepedia.presentation.screens.MoviePediaViewModel
 
 @Composable
 fun MovieDetailScreen(
     modifier: Modifier = Modifier,
-    viewModel: ShowsViewModel,
+    viewModel: MoviePediaViewModel,
     onBackClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -46,10 +42,9 @@ fun MovieDetailScreen(
         LoadingScreen()
     } else if (movieDetailUiState.movieDetail.movieTitle.isNotEmpty()) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding())
         ) {
             MovieDetailMediaSection(
                 movieBackdropUrl = movieDetailUiState.movieDetail.movieBackdropUrl,
@@ -77,21 +72,27 @@ fun MovieDetailScreen(
                             textAlign = TextAlign.Justify
                         )
                     })
-                DetailTextSection(modifier = Modifier.padding(horizontal = 16.dp),sectionTitle = "cast", sectionContent = {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        contentPadding = PaddingValues(horizontal = 8.dp)
-                    ) {
-                        items(movieDetailUiState.movieDetail.movieCasts) {
-                            ItemCastsCard(cast = it)
+                DetailTextSection(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    sectionTitle = "cast",
+                    sectionContent = {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp)
+                        ) {
+                            items(movieDetailUiState.movieDetail.movieCasts) {
+                                ItemCastsCard(cast = it)
+                            }
                         }
-                    }
-                })
+                    })
                 DetailTextSection(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     sectionTitle = "keywords",
                     sectionContent = {
-                        AppGenresChip(modifier = Modifier.padding(horizontal = 16.dp), genres = movieDetailUiState.movieDetail.movieKeywords)
+                        AppGenresChip(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            genres = movieDetailUiState.movieDetail.movieKeywords
+                        )
                     })
             }
             Spacer(modifier = Modifier.weight(1f))
@@ -100,9 +101,9 @@ fun MovieDetailScreen(
                     .padding(16.dp)
                     .fillMaxWidth(),
                 onClick = {},
-                shape = SnackbarDefaults.shape,
+                shape = CardDefaults.shape,
                 colors = ButtonDefaults.buttonColors(
-                    contentColor = MaterialTheme.colorScheme.background
+                    contentColor = MaterialTheme.colorScheme.onBackground
                 )
             ) {
                 Text(text = "Add to watchlist", style = MaterialTheme.typography.titleSmall)

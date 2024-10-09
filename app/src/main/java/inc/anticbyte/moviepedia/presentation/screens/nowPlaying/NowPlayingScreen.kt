@@ -1,4 +1,4 @@
-package inc.anticbyte.moviepedia.presentation.screens.trending
+package inc.anticbyte.moviepedia.presentation.screens.nowPlaying
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
@@ -28,48 +28,26 @@ import inc.anticbyte.moviepedia.utils.AppTabItems
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun TrendingScreen(
+fun NowPlayingScreen(
     modifier: Modifier = Modifier,
     viewModel: MoviePediaViewModel,
     onMovieClick: (Int) -> Unit
 ) {
-    val pagerState = rememberPagerState(pageCount = { AppTabItems.entries.size })
-    var selectedIndex by rememberSaveable { mutableIntStateOf(0) }
-    val trendingMovies by viewModel.trendingUiState.collectAsState()
-    val trendingMoviesDay = viewModel.trendingMovies.collectAsLazyPagingItems()
+    val nowPlayingMoviesUiState by viewModel.nowPlayingUiState.collectAsState()
+    val nowPlayingMovies = viewModel.nowPlayingMovies.collectAsLazyPagingItems()
 
-
-
-    if (trendingMovies.error.isNotEmpty()) {
+    if (nowPlayingMoviesUiState.error.isNotEmpty()) {
         ErrorScreen()
     } else
         Column(modifier = Modifier) {
-            TopAppBar(title = { Text("Trending", style = MaterialTheme.typography.titleMedium) })
-            AppFilterChip(
-                modifier = Modifier
-                    .padding(start = 16.dp, bottom = 4.dp),
-                selectedIndex = selectedIndex,
-                chips = AppTabItems.entries.map { it.tabName },
-                onChipSelected = { selectedIndex = it;viewModel.getTrendingMovies(AppTabItems.entries[selectedIndex].timeWindow) }
-            )
-            if (trendingMovies.isLoading) {
+            TopAppBar(title = { Text("Now Playing", style = MaterialTheme.typography.titleMedium) })
+            if (nowPlayingMoviesUiState.isLoading) {
                 LoadingScreen()
             } else
-                when (AppTabItems.entries[selectedIndex]) {
-                    AppTabItems.DAY -> {
-                        ListVerticalGrid(
-                            gridItems = trendingMoviesDay,
-                            onMovieClick = onMovieClick
-                        )
-                    }
-
-                    AppTabItems.WEEK -> {
-                        ListVerticalGrid(
-                            gridItems = trendingMoviesDay,
-                            onMovieClick = onMovieClick
-                        )
-                    }
-                }
+                ListVerticalGrid(
+                    gridItems = nowPlayingMovies,
+                    onMovieClick = onMovieClick
+                )
         }
 
 }

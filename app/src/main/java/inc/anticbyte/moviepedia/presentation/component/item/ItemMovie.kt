@@ -1,8 +1,10 @@
 package inc.anticbyte.moviepedia.presentation.component.item
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,8 +34,8 @@ fun ItemMovie(movie: Movie, onMovieClick: () -> Unit = {}) {
             modifier = Modifier
                 .clip(shape = CardDefaults.shape)
                 .clickable { onMovieClick() }
-                .height(150.dp)
-                .fillMaxWidth(),
+                .aspectRatio(2/3f)
+                .background(MaterialTheme.colorScheme.surfaceContainer),
             model = movie.moviePoster,
             contentDescription = null,
             contentScale = ContentScale.Crop

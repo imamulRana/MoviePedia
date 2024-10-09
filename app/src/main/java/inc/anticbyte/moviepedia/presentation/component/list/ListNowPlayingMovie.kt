@@ -26,7 +26,7 @@ fun ListNowPlayingMovies(
     movies: List<Movie>,
     navigateToScreenDetails: (movieId: Int) -> Unit = {},
     @StringRes sectionTitle: Int = R.string.latest_movies,
-    navigateToScreenTrending: () -> Unit = {},
+    navigateToScreenNowPlaying: () -> Unit = {},
 ) {
     Column(modifier = Modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
@@ -47,7 +47,7 @@ fun ListNowPlayingMovies(
             item {
                 IconButton(
                     modifier = Modifier.offset(y = 50.dp),
-                    onClick = { navigateToScreenTrending() }) {
+                    onClick = { navigateToScreenNowPlaying() }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_forward),
                         contentDescription = null

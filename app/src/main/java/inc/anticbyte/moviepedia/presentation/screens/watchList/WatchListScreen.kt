@@ -1,6 +1,5 @@
 package inc.anticbyte.moviepedia.presentation.screens.watchList
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,10 +23,8 @@ import inc.anticbyte.moviepedia.navigation.MoviePediaScreens
 import inc.anticbyte.moviepedia.presentation.component.item.ItemWatchList
 import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
 import inc.anticbyte.moviepedia.presentation.screens.LoadingScreen
-import inc.anticbyte.moviepedia.presentation.screens.ShowsViewModel
-import inc.anticbyte.moviepedia.utils.saveToken
+import inc.anticbyte.moviepedia.presentation.screens.MoviePediaViewModel
 import inc.anticbyte.moviepedia.utils.updateToken
-import kotlinx.coroutines.delay
 
 /**
  * WatchList Screen For Movies [viewModel]
@@ -35,7 +32,7 @@ import kotlinx.coroutines.delay
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WatchListScreen(viewModel: ShowsViewModel, navController: NavController) {
+fun WatchListScreen(viewModel: MoviePediaViewModel, navController: NavController) {
     val movies by viewModel.watchListUiState.collectAsState()
     val context = LocalContext.current
     if (movies.isLoading) {
@@ -57,7 +54,7 @@ fun WatchListScreen(viewModel: ShowsViewModel, navController: NavController) {
                     top = 8.dp,
                     start = 16.dp,
                     end = 16.dp,
-                    bottom = 48.dp
+                    bottom = 8.dp
                 )
             ) {
                 items(movies.movies) { movie ->
@@ -66,9 +63,6 @@ fun WatchListScreen(viewModel: ShowsViewModel, navController: NavController) {
                         navController.navigate(MoviePediaScreens.MovieDetail(movie.movieId))
                     })
                 }
-            }
-            LaunchedEffect(Unit) {
-                updateToken(token = "UpdatedToken At UI", context = context)
             }
         }
     }

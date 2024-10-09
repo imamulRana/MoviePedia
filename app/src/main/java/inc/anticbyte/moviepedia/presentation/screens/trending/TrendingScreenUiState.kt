@@ -1,9 +1,10 @@
 package inc.anticbyte.moviepedia.presentation.screens.trending
 
+import androidx.paging.PagingData
+import inc.anticbyte.moviepedia.domain.model.Movie
+
 
 data class TrendingScreenUiState(
     val isLoading: Boolean = true,
-    val movieName: String = "",
-    val moviePoster: String = "",
-    val error: String? = "Something went wrong"
+    val error: String = ""
 )

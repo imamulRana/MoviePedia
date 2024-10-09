@@ -10,9 +10,9 @@ import inc.anticbyte.moviepedia.domain.model.MovieKeyWord
 
 
 interface NetworkRepository {
-    suspend fun getTrendingMovies(timeWindow: String = "day", page: Int = 1): MovieDto
+    suspend fun getTrendingMovies(timeWindow: String, page: Int): MovieDto
     suspend fun getPopularMovies(): MovieDto
-    suspend fun getNowPlayingMovies(): NowPlayingMovieDto
+    suspend fun getNowPlayingMovies(page: Int): NowPlayingMovieDto
     suspend fun getWatchListMovies(): WatchListMovieDto
     suspend fun getMovieDetails(movieId: String): MovieDetailDto
     suspend fun getMovieKeyWords(movieId: String): Result<List<MovieKeyWord>>

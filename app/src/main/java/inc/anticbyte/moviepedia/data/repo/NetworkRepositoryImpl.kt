@@ -88,12 +88,12 @@ class NetworkRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getNowPlayingMovies(): NowPlayingMovieDto {
+    override suspend fun getNowPlayingMovies(page: Int): NowPlayingMovieDto {
         return withContext(io) {
             try {
                 val response = ktorClient.get(now_playing_movie) {
                     parameter("language", "en-US")
-                    parameter("page", 1)
+                    parameter("page", page)
                 }
                 if (response.status.isSuccess()) {
                     response.body()

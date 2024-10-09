@@ -3,6 +3,10 @@ package inc.anticbyte.moviepedia.navigation
 import kotlinx.serialization.Serializable
 
 sealed class MoviePediaScreens {
+
+    @Serializable
+    data object Onboarding : MoviePediaScreens()
+
     @Serializable
     data object Home : MoviePediaScreens()
 
@@ -20,5 +24,8 @@ sealed class MoviePediaScreens {
 
     @Serializable
     data object Trending : MoviePediaScreens()
+
+    @Serializable
+    data object NowPlaying : MoviePediaScreens()
 
 }

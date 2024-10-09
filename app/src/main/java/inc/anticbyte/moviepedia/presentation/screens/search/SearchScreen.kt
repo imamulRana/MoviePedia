@@ -1,23 +1,18 @@
 package inc.anticbyte.moviepedia.presentation.screens.search
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,23 +27,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import inc.anticbyte.moviepedia.R
-import inc.anticbyte.moviepedia.domain.model.MovieWatchList
-import inc.anticbyte.moviepedia.presentation.component.common.AppGenresChip
+import inc.anticbyte.moviepedia.presentation.component.item.ItemSearch
 import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
 import inc.anticbyte.moviepedia.presentation.screens.LoadingScreen
-import inc.anticbyte.moviepedia.presentation.screens.ShowsViewModel
+import inc.anticbyte.moviepedia.presentation.screens.MoviePediaViewModel
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -60,7 +50,7 @@ import kotlinx.coroutines.flow.filter
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
-    viewModel: ShowsViewModel,
+    viewModel: MoviePediaViewModel,
     onMovieClick: (Int) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -141,16 +131,21 @@ fun SearchScreen(
         } else if (searchUiState.error.isNotEmpty()) {
             ErrorScreen()
         } else
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            LazyColumn(
+                modifier = Modifier.animateContentSize(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(vertical = 8.dp)
+            ) {
                 if (query.isNotEmpty())
                     items(searchUiState.movies) { search ->
-                        ItemSearch(watchList = search, onMovieClick = {
+                        ItemSearch(modifier= Modifier.animateItem(),
+                            watchList = search, onMovieClick = {
                             viewModel.getMovieDetail(search.movieId)
                             onMovieClick(search.movieId)
                         })
                     } else {
                     items(searchUiState.popularSearch) { popular ->
-                        ItemSearch(watchList = popular, onMovieClick = {
+                        ItemSearch(modifier= Modifier.animateItem(),watchList = popular, onMovieClick = {
                             onMovieClick(popular.movieId)
                         })
                     }
@@ -159,51 +154,6 @@ fun SearchScreen(
     }
 }
 
-@Composable
-fun ItemSearch(
-    modifier: Modifier = Modifier,
-    watchList: MovieWatchList,
-    onMovieClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-            .clip(CardDefaults.shape)
-            .clickable(onClick = onMovieClick)
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        AsyncImage(
-            modifier = Modifier
-                .clip(CardDefaults.shape)
-                .height(100.dp)
-                .aspectRatio(2 / 3f)
-                .background(MaterialTheme.colorScheme.surfaceContainer)
-            ,
-            model = watchList.moviePosterPath,
-//            painter = painterResource(R.drawable.image_frost),
-            contentDescription = null,
-            contentScale = ContentScale.Crop
-        )
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .align(Alignment.CenterVertically),
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-        ) {
-            Text(
-                text = watchList.movieTitle, style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Text(
-                text = watchList.movieReleaseDate,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onBackground.copy(.7f)
-            )
-            AppGenresChip(genres = watchList.movieGenres)
-        }
-    }
-}
 
 @Preview()
 @Composable

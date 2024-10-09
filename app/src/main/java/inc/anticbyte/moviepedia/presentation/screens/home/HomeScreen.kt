@@ -11,28 +11,27 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import inc.anticbyte.moviepedia.R
 import inc.anticbyte.moviepedia.navigation.MoviePediaScreens
+import inc.anticbyte.moviepedia.presentation.component.common.AppCarousel
 import inc.anticbyte.moviepedia.presentation.component.list.ListNowPlayingMovies
 import inc.anticbyte.moviepedia.presentation.component.list.ListPopularMovie
 import inc.anticbyte.moviepedia.presentation.component.list.ListTrendingMovie
 import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
 import inc.anticbyte.moviepedia.presentation.screens.LoadingScreen
-import inc.anticbyte.moviepedia.presentation.screens.ShowsViewModel
-import inc.anticbyte.moviepedia.utils.saveToken
+import inc.anticbyte.moviepedia.presentation.screens.MoviePediaViewModel
+import inc.anticbyte.moviepedia.utils.AppTabItems
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: ShowsViewModel, navController: NavController) {
+fun HomeScreen(viewModel: MoviePediaViewModel, navController: NavController) {
     val uiState by viewModel.homeUiState.collectAsState()
     val scrollState = rememberScrollState()
 
@@ -45,8 +44,6 @@ fun HomeScreen(viewModel: ShowsViewModel, navController: NavController) {
             modifier = Modifier.verticalScroll(scrollState),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            //Top Bar
-
             TopAppBar(title = {
                 Text(
                     text = stringResource(id = R.string.app_name),
@@ -54,19 +51,18 @@ fun HomeScreen(viewModel: ShowsViewModel, navController: NavController) {
                 )
             }, actions = {
                 IconButton(onClick = {
-                    viewModel.getMovieWatchList()
-                    navController.navigate(MoviePediaScreens.WatchList)
-                }) {
-                    Icon(painter = painterResource(R.drawable.ic_bookmark), contentDescription = "")
-                }
-                IconButton(onClick = {
-                    viewModel.getMovieBySearch()
+                    viewModel.getMovieBySearch("")
                     navController.navigate(MoviePediaScreens.Search)
                 }) {
                     Icon(painter = painterResource(R.drawable.ic_search), contentDescription = "")
                 }
             })
-
+            AppCarousel(viewModel = viewModel, onMovieClick = {
+                viewModel.getMovieDetail(it)
+                navController.navigate(
+                    MoviePediaScreens.MovieDetail(it)
+                )
+            })
             // Trending List Movies
 
             ListTrendingMovie(
@@ -75,6 +71,10 @@ fun HomeScreen(viewModel: ShowsViewModel, navController: NavController) {
                 navigateToScreenDetails = { movieId ->
                     viewModel.getMovieDetail(movieId)
                     navController.navigate(MoviePediaScreens.MovieDetail(movieId))
+                },
+                navigateToScreenTrending = {
+                    viewModel.getTrendingMovies(AppTabItems.DAY.timeWindow)
+                    navController.navigate(MoviePediaScreens.Trending)
                 })
 
             // Popular List Movies
@@ -96,12 +96,12 @@ fun HomeScreen(viewModel: ShowsViewModel, navController: NavController) {
                 navigateToScreenDetails = { movieId ->
                     viewModel.getMovieDetail(movieId)
                     navController.navigate(MoviePediaScreens.MovieDetail(movieId))
+                },
+                navigateToScreenNowPlaying = {
+                    viewModel.getNowPlayingMovies()
+                    navController.navigate(MoviePediaScreens.NowPlaying)
                 }
             )
         }
-    }
-    val context = LocalContext.current
-    LaunchedEffect(Unit) {
-        saveToken("SavedToken At UI", context)
     }
 }
