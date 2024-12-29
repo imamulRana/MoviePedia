@@ -14,6 +14,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -27,6 +28,7 @@ import androidx.compose.ui.util.lerp
 import coil.compose.AsyncImage
 import inc.anticbyte.moviepedia.presentation.screens.MoviePediaViewModel
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
+import kotlinx.coroutines.delay
 import kotlin.math.absoluteValue
 
 @Composable
@@ -36,7 +38,8 @@ fun AppCarousel(
     onMovieClick: (Int) -> Unit
 ) {
     val nowPlayingMovies by viewModel.homeUiState.collectAsState()
-    val pagerState = rememberPagerState(initialPage = 5, initialPageOffsetFraction = -0.1f) { Int.MAX_VALUE }
+    val pagerState =
+        rememberPagerState(initialPage = 5, initialPageOffsetFraction = -0.1f) { Int.MAX_VALUE }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         HorizontalPager(
@@ -52,16 +55,13 @@ fun AppCarousel(
                 modifier = Modifier
                     .aspectRatio(2 / 3f)
                     .graphicsLayer {
-                        scaleY = lerp(
+                        val scale = lerp(
                             start = 0.8f,
                             stop = 1f,
                             fraction = 1f - pageOffset.coerceIn(0f, 1f)
                         )
-                        scaleX = lerp(
-                            start = 0.8f,
-                            stop = 1f,
-                            fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                        )
+                        scaleX = scale
+                        scaleY = scale
                     }
                     .clip(SnackbarDefaults.shape)
                     .clickable { onMovieClick(nowPlayingMovies.featuredMovie[page % nowPlayingMovies.featuredMovie.size].movieId) },
@@ -73,7 +73,7 @@ fun AppCarousel(
         }
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            nowPlayingMovies.featuredMovie[pagerState.currentPage % nowPlayingMovies.featuredMovie.size].movieTitle,
+            text = nowPlayingMovies.featuredMovie[pagerState.currentPage % nowPlayingMovies.featuredMovie.size].movieTitle,
             style = MaterialTheme.typography.titleSmall
         )
     }

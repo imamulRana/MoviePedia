@@ -1,8 +1,9 @@
 package inc.anticbyte.moviepedia.data.repo
 
-import androidx.paging.PagingData
+import inc.anticbyte.moviepedia.data.remote.dto.CastDetailDto
 import inc.anticbyte.moviepedia.data.remote.dto.MovieSearchDto
 import inc.anticbyte.moviepedia.data.remote.dto.WatchListMovieDto
+import inc.anticbyte.moviepedia.data.remote.movie.MovieAddOrRemoveWatchListDto
 import inc.anticbyte.moviepedia.data.remote.movie.MovieCreditDto
 import inc.anticbyte.moviepedia.data.remote.movie.MovieDetailDto
 import inc.anticbyte.moviepedia.data.remote.movie.MovieKeywordDto
@@ -20,10 +21,13 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
 import io.ktor.http.appendPathSegments
+import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -35,7 +39,7 @@ class NetworkRepositoryImpl @Inject constructor(
     private val ktorClient: HttpClient
 ) : NetworkRepository {
 
-    override suspend fun getTrendingMovies(timeWindow: String, page:Int): MovieDto {
+    override suspend fun getTrendingMovies(timeWindow: String, page: Int): MovieDto {
         return withContext(io) {
             try {
                 val response = ktorClient.get(trending_movie) {
@@ -110,7 +114,7 @@ class NetworkRepositoryImpl @Inject constructor(
         return withContext(io) {
             try {
                 val response = ktorClient.get(app_base_url) {
-                    url.appendPathSegments("account", "21418184", "watchlist", "movies")
+                    url.appendPathSegments("account", "account_id", "watchlist", "movies")
                     parameter("language", "en-US")
                 }
                 if (response.status.isSuccess()) {
@@ -163,18 +167,6 @@ class NetworkRepositoryImpl @Inject constructor(
                     throw Exception("Something went wrong")
                 }
             }
-            /* try {
-                 val networkResponse =
-                     ktorClient.get("movie") { url.appendPathSegments(movieId, "credits") }
-                 val response = networkResponse.body<MovieCreditDto>()
-                 if (networkResponse.status.isSuccess()) {
-                     response.cast?.map { it.toMovieCast() }.orEmpty()
-                 } else {
-                     throw Exception("Something went wrong")
-                 }
-             } catch (exp: Exception) {
-                 throw Exception(exp.localizedMessage)
-             }*/
         }
     }
 
@@ -187,6 +179,66 @@ class NetworkRepositoryImpl @Inject constructor(
                 }
                 if (response.status.isSuccess()) {
                     response.body<MovieSearchDto>()
+                } else {
+                    throw Exception(response.status.description)
+                }
+            }.getOrElse {
+                throw Exception(it.localizedMessage)
+            }
+        }
+    }
+
+    override suspend fun addOrRemoveMovieToWatchList(
+        mediaId: Int,
+        watchlist: Boolean
+    ): Result<Unit> {
+        return withContext(io) {
+            runCatching {
+                val response = ktorClient.post {
+                    url.appendPathSegments("account", "account_id", "watchlist")
+                    contentType(ContentType.Application.Json)
+                    setBody(
+                        MovieAddOrRemoveWatchListDto(
+                            mediaId = mediaId,
+                            mediaType = "movie",
+                            watchlist = watchlist
+                        )
+                    )
+                }
+                if (response.status.isSuccess()) {
+                    response.body()
+                } else {
+                    throw Exception(response.status.description)
+                }
+            }
+        }
+    }
+
+    override suspend fun getMovieCastDetail(personId: String): CastDetailDto {
+        return withContext(io) {
+            runCatching {
+                val response = ktorClient.get("person") {
+                    url.appendPathSegments(personId)
+                }
+                if (response.status.isSuccess()) {
+                    response.body<CastDetailDto>()
+                } else {
+                    throw Exception(response.status.description)
+                }
+            }.getOrElse {
+                throw Exception(it.localizedMessage)
+            }
+        }
+    }
+
+    override suspend fun getMovieCastCredits(personId: String): inc.anticbyte.moviepedia.data.remote.dto.MovieCreditDto {
+        return withContext(io) {
+            runCatching {
+                val response = ktorClient.get("person") {
+                    url.appendPathSegments(personId, "movie_credits")
+                }
+                if (response.status.isSuccess()) {
+                    response.body<inc.anticbyte.moviepedia.data.remote.dto.MovieCreditDto>()
                 } else {
                     throw Exception(response.status.description)
                 }

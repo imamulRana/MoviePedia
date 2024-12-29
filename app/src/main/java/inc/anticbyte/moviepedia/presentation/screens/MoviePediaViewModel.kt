@@ -7,6 +7,7 @@ import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import inc.anticbyte.moviepedia.domain.model.Movie
 import inc.anticbyte.moviepedia.domain.usecase.GetMovieBySearchUseCase
+import inc.anticbyte.moviepedia.domain.usecase.GetMovieCastDetailUseCase
 import inc.anticbyte.moviepedia.domain.usecase.GetMovieDetailUseCase
 import inc.anticbyte.moviepedia.domain.usecase.GetMovieWatchListUseCase
 import inc.anticbyte.moviepedia.domain.usecase.GetNowPlayingMovieInitUseCase
@@ -15,6 +16,8 @@ import inc.anticbyte.moviepedia.domain.usecase.GetPopularMovieUseCase
 import inc.anticbyte.moviepedia.domain.usecase.GetTopSearchMovieUseCase
 import inc.anticbyte.moviepedia.domain.usecase.GetTrendingMovieInitUseCase
 import inc.anticbyte.moviepedia.domain.usecase.GetTrendingMovieUseCase
+import inc.anticbyte.moviepedia.domain.usecase.PostMovieStatusToWatchListUseCase
+import inc.anticbyte.moviepedia.presentation.screens.castDetail.CastDetailUiState
 import inc.anticbyte.moviepedia.presentation.screens.home.HomeScreenUiState
 import inc.anticbyte.moviepedia.presentation.screens.movieDetail.MovieDetailScreenUiState
 import inc.anticbyte.moviepedia.presentation.screens.nowPlaying.NowPlayingScreenUiState
@@ -41,7 +44,9 @@ class MoviePediaViewModel @Inject constructor(
     private val getMovieBySearchUseCase: GetMovieBySearchUseCase,
     private val getTopSearchMovieUseCase: GetTopSearchMovieUseCase,
     private val getTrendingMovieUseCase: GetTrendingMovieUseCase,
-    private val getNowPlayingMovieUseCase: GetNowPlayingMovieUseCase
+    private val getNowPlayingMovieUseCase: GetNowPlayingMovieUseCase,
+    private val postMovieStatusToWatchListUseCase: PostMovieStatusToWatchListUseCase,
+    private val getMovieCastDetailUseCase: GetMovieCastDetailUseCase
 ) : ViewModel() {
 
     init {
@@ -57,29 +62,20 @@ class MoviePediaViewModel @Inject constructor(
 
     private fun getFeaturedMovieInit() {
         viewModelScope.launch {
-            RequestState.Loading
-            when (val movie = getNowPlayingMovieInitUseCase()) {
-                is RequestState.Error -> {
-                    _homeUiState.value = _homeUiState.value.copy(
+            val response = getNowPlayingMovieInitUseCase(onLoading = {
+                _homeUiState.update { home -> home.copy(isLoading = true) }
+            })
+            response.fold(onSuccess = {
+                _homeUiState.update { home -> home.copy(isLoading = false, featuredMovie = it) }
+
+            }, onFailure = {
+                _homeUiState.update { home ->
+                    home.copy(
                         isLoading = false,
-                        error = movie.message
-                    )
-
-                }
-
-                is RequestState.Loading -> {
-                    _homeUiState.value = _homeUiState.value.copy(
-                        isLoading = true
+                        error = it.localizedMessage ?: "Ui Error"
                     )
                 }
-
-                is RequestState.Success -> {
-                    _homeUiState.value = _homeUiState.value.copy(
-                        isLoading = false,
-                        featuredMovie = movie.data.shuffled().take(10)
-                    )
-                }
-            }
+            })
         }
     }
 
@@ -139,34 +135,34 @@ class MoviePediaViewModel @Inject constructor(
 
     private fun getNowPlayingMoviesInit() {
         viewModelScope.launch {
-            when (val movie = getNowPlayingMovieInitUseCase()) {
-                RequestState.Loading -> {
-                    _homeUiState.value = _homeUiState.value.copy(
-                        isLoading = true
-                    )
+            val response = getNowPlayingMovieInitUseCase(onLoading = {
+                _homeUiState.update { home -> home.copy(isLoading = true) }
+            })
+            response.fold(
+                onSuccess = {
+                    _homeUiState.update { home ->
+                        home.copy(
+                            isLoading = false,
+                            nowPlayingMovies = it
+                        )
+                    }
+                }, onFailure = {
+                    _homeUiState.update { home ->
+                        home.copy(
+                            isLoading = false,
+                            error = it.localizedMessage ?: "Ui Error"
+                        )
+                    }
                 }
-
-                is RequestState.Error -> {
-                    _homeUiState.value = _homeUiState.value.copy(
-                        isLoading = false,
-                        error = movie.message
-                    )
-                }
-
-                is RequestState.Success -> {
-                    _homeUiState.value = _homeUiState.value.copy(
-                        isLoading = false,
-                        nowPlayingMovies = movie.data
-                    )
-                }
-            }
+            )
         }
     }
     /* End of Home */
 
     /*Start of Section for detail*/
     private val _movieDetailUiState = MutableStateFlow(MovieDetailScreenUiState())
-    val movieDetailUiState: StateFlow<MovieDetailScreenUiState> = _movieDetailUiState.asStateFlow()
+    val movieDetailUiState: StateFlow<MovieDetailScreenUiState> =
+        _movieDetailUiState.asStateFlow()
 
     fun getMovieDetail(movieId: Int) {
         viewModelScope.launch {
@@ -197,28 +193,21 @@ class MoviePediaViewModel @Inject constructor(
 
     fun getMovieWatchList() {
         viewModelScope.launch {
-            RequestState.Loading
-            when (val response = getMovieWatchListUseCase()) {
-                RequestState.Loading -> {
-                    _watchListUiState.value = _watchListUiState.value.copy(
-                        isLoading = true
-                    )
+            val response = getMovieWatchListUseCase(
+                onLoading = {
                 }
-
-                is RequestState.Error -> {
-                    _watchListUiState.value = _watchListUiState.value.copy(
-                        isLoading = false,
-                        error = response.message
-                    )
-                }
-
-                is RequestState.Success -> {
-                    _watchListUiState.value = _watchListUiState.value.copy(
-                        isLoading = false,
-                        movies = response.data
-                    )
-                }
-            }
+            )
+            response.fold(onSuccess = {
+                _watchListUiState.value = _watchListUiState.value.copy(
+                    isLoading = false,
+                    movies = it
+                )
+            }, onFailure = {
+                _watchListUiState.value = _watchListUiState.value.copy(
+                    isLoading = false,
+                    error = it.localizedMessage ?: "Ui Error"
+                )
+            })
         }
     }
     /* End of Movie watchlist */
@@ -314,4 +303,62 @@ class MoviePediaViewModel @Inject constructor(
         }
     }
     /* End of NowPlaying */
+
+    /* Start of Post WatchList*/
+
+    fun postAddOrRemoveWatchList(movieId: Int, watchList: Boolean, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            val response = postMovieStatusToWatchListUseCase(movieId, watchList, onLoading = {
+//                _movieDetailUiState.update { detail -> detail.copy(isLoading = true) }
+            })
+            response.fold(onSuccess = {
+                _movieDetailUiState.update { detail ->
+                    detail.copy(
+                        isLoading = false,
+                        movieDetail = detail.movieDetail.copy(
+                            movieId = movieId,
+                            isMovieInWatchList = watchList
+                        )
+                    )
+                }
+                onSuccess()
+            }) {
+                _movieDetailUiState.update { detail ->
+                    detail.copy(
+                        error = it.localizedMessage ?: "Ui Error", isLoading = false
+                    )
+                }
+            }
+        }
+    }
+    /* End of Post WatchList*/
+
+    /* Start of CastDetail*/
+    private val _castDetailUiState = MutableStateFlow(CastDetailUiState())
+    val castDetailUiState: StateFlow<CastDetailUiState> = _castDetailUiState.asStateFlow()
+
+    fun getCastDetail(personId: Int) {
+        viewModelScope.launch {
+            val response = getMovieCastDetailUseCase(personId.toString(), onLoading = {
+                _castDetailUiState.update { detail -> detail.copy(isLoading = true) }
+            })
+            response.fold(onSuccess = {
+                _castDetailUiState.update { detail ->
+                    detail.copy(
+                        isLoading = false,
+                        castDetail = it
+                    )
+                }
+            }) {
+                _castDetailUiState.update { detail ->
+                    detail.copy(
+                        error = it.localizedMessage ?: "Ui Error", isLoading = false
+                    )
+                }
+            }
+        }
+
+        /* End of CastDetail*/
+
+    }
 }

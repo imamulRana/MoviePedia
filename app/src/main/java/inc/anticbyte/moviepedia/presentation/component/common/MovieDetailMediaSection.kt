@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import inc.anticbyte.moviepedia.R
+import inc.anticbyte.moviepedia.utils.voteCountFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +55,7 @@ fun MovieDetailMediaSection(
             .fillMaxWidth()
             .height(400.dp)
     ) {
-        TopAppBar(modifier = Modifier.zIndex(1f), title = {}, navigationIcon = {
+        TopAppBar(modifier = Modifier.padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()).zIndex(1f), title = {}, navigationIcon = {
             IconButton(onClick = { onBackClick() }) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_back_ios),
@@ -122,7 +126,7 @@ fun MovieDetailMediaSection(
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "(${movieVoteCount})",
+                        text = "(${voteCountFormat(movieVoteCount)})",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground.copy(.7f)
                     )

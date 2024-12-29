@@ -20,7 +20,7 @@ class GetPopularMovieUseCase @Inject constructor(
                 if (response.isEmpty()) {
                     RequestState.Error("Something went wrong")
                 } else {
-                    RequestState.Success(response.shuffled())
+                    RequestState.Success(response)
                 }
             }.getOrElse {
                 RequestState.Error(it.localizedMessage ?: "Something went wrong")

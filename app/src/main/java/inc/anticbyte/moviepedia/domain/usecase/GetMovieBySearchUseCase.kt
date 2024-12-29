@@ -11,13 +11,15 @@ class GetMovieBySearchUseCase @Inject constructor(
     private val networkRepository: NetworkRepository,
     @IoDispatcher private val io: CoroutineDispatcher
 ) {
-    suspend operator fun invoke(query: String, onLoading: () -> Unit = {}): Result<List<MovieWatchList>> {
+    suspend operator fun invoke(
+        query: String,
+        onLoading: () -> Unit = {}
+    ): Result<List<MovieWatchList>> {
         return withContext(io) {
             runCatching {
                 onLoading()
                 val networkResponse = networkRepository.getMovieBySearch(query)
-                val response = networkResponse.results?.map { it.toMovieWatchList() }.orEmpty()
-                response
+                networkResponse.results?.map { it.toMovieWatchList() }.orEmpty()
             }.onFailure { exp ->
                 throw Exception(exp.localizedMessage)
             }

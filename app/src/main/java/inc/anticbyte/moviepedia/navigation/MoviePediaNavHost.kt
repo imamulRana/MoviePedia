@@ -6,8 +6,11 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +19,7 @@ import inc.anticbyte.moviepedia.presentation.screens.home.HomeScreen
 import inc.anticbyte.moviepedia.presentation.screens.movieDetail.MovieDetailScreen
 import inc.anticbyte.moviepedia.presentation.screens.nowPlaying.NowPlayingScreen
 import inc.anticbyte.moviepedia.presentation.screens.onboarding.OnboardingScreen
+import inc.anticbyte.moviepedia.presentation.screens.profile.ProfileScreen
 import inc.anticbyte.moviepedia.presentation.screens.search.SearchScreen
 import inc.anticbyte.moviepedia.presentation.screens.trending.TrendingScreen
 import inc.anticbyte.moviepedia.presentation.screens.watchList.WatchListScreen
@@ -30,8 +34,22 @@ fun MoviePediaNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = MoviePediaScreens.Home
+        startDestination = MoviePediaScreens.Onboarding
     ) {
+        // Onboarding
+        composable<MoviePediaScreens.Onboarding> {
+            OnboardingScreen(
+                modifier = Modifier.padding(16.dp),
+                buttonModifier = Modifier.fillMaxWidth(),
+                onContinueClick = {
+                    navController.navigate(MoviePediaScreens.Home) {
+                        launchSingleTop = true
+                        popUpToRouteObject
+                    }
+                }
+            )
+        }
+
         // Home
         composable<MoviePediaScreens.Home> {
             HomeScreen(
@@ -58,8 +76,11 @@ fun MoviePediaNavHost(
         ) {
             MovieDetailScreen(
                 viewModel = viewModel,
-                onBackClick = { navController.navigateUp() })
+                onBackClick = { navController.navigateUp() }, onCastClick = {
+                    viewModel.getCastDetail(it)
+                })
         }
+
         // Movie Watch List
         composable<MoviePediaScreens.WatchList> {
             WatchListScreen(
@@ -67,6 +88,7 @@ fun MoviePediaNavHost(
                 navController = navController
             )
         }
+
         // Search
         //this approach is more flexible for larger apps with more screens to keep track
         composable<MoviePediaScreens.Search> {
@@ -110,15 +132,23 @@ fun MoviePediaNavHost(
             TrendingScreen(viewModel = viewModel, onMovieClick = { movieId ->
                 viewModel.getMovieDetail(movieId)
                 navController.navigate(MoviePediaScreens.MovieDetail(movieId))
-            })
+            }, onBackClick = { navController.navigateUp() })
         }
+
         //NowPlaying
         composable<MoviePediaScreens.NowPlaying> {
             NowPlayingScreen(viewModel = viewModel, onMovieClick = { movieId ->
                 viewModel.getMovieDetail(movieId)
                 navController.navigate(MoviePediaScreens.MovieDetail(movieId))
+            }, onBackClick = {
+                navController.navigateUp()
             })
         }
-        composable<MoviePediaScreens.Person> { }
+
+        //Profile
+        composable<MoviePediaScreens.Profile> {
+            ProfileScreen()
+        }
+        //Cast
     }
 }

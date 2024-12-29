@@ -4,7 +4,6 @@ package inc.anticbyte.moviepedia.data.remote.movie
 import inc.anticbyte.moviepedia.domain.model.MovieDetail
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import java.math.BigInteger
 
 @Serializable
 data class MovieDetailDto(
@@ -122,6 +121,7 @@ data class MovieDetailDto(
         moviePosterUrl = "https://image.tmdb.org/t/p/w500$posterPath",
         movieBackdropUrl = "https://image.tmdb.org/t/p/w1280$backdropPath",
         movieTagline = tagline.orEmpty(),
+        productionCompany = productionCompanies?.map { it.name.orEmpty() } ?: emptyList()
     )
 
 }

@@ -1,8 +1,13 @@
 package inc.anticbyte.moviepedia.presentation.component.common
 
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.areSystemBarsVisible
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsIgnoringVisibility
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +31,7 @@ import inc.anticbyte.moviepedia.presentation.screens.MoviePediaViewModel
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
 import inc.anticbyte.moviepedia.utils.navBarItems
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun AppBottomBar(viewModel: MoviePediaViewModel, navController: NavController) {
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -33,20 +39,15 @@ fun AppBottomBar(viewModel: MoviePediaViewModel, navController: NavController) {
 //    var currentRoute by remember { mutableStateOf(NavigationBarItems.HOME.navigationRoute) }
 
     NavigationBar(
-        modifier = Modifier.height(80.dp),
         containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
-        windowInsets = WindowInsets.navigationBars
     ) {
         navBarItems.forEach { navBarItem ->
             NavigationBarItem(
                 selected = currentDestination?.hierarchy?.any { it.hasRoute(navBarItem.navigationRoute::class) } == true,
                 onClick = {
                     navController.navigate(navBarItem.navigationRoute) {
-                        if (navBarItem.navigationRoute == MoviePediaScreens.WatchList) {
-                            viewModel.getMovieWatchList()
-                        }
-                        popUpTo(navController.graph.findStartDestination().id) {
+                        popUpTo(MoviePediaScreens.Home) {
                             saveState = true
                         }
                         // Avoid multiple copies of the same destination when
@@ -55,36 +56,8 @@ fun AppBottomBar(viewModel: MoviePediaViewModel, navController: NavController) {
                         // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
-
-                    /* when (currentRoute) {
-                         MoviePediaScreens.Home -> {
-                             navController.navigate(MoviePediaScreens.Home) {
-                                 launchSingleTop = true
-                                 restoreState = true
-                             }
-                         }
-
-                         MoviePediaScreens.Person -> {
-                             navController.navigate(MoviePediaScreens.Person) {
-                                 launchSingleTop = true
-                                 restoreState = true
-
-                             }
-                         }
-
-                         MoviePediaScreens.WatchList -> {
-                             viewModel.getMovieWatchList()
-                             navController.navigate(MoviePediaScreens.WatchList) {
-                                 launchSingleTop = true
-                                 restoreState = true
-                             }
-                         }
-
-                         else -> {}
-                     }*/
                 },
                 icon = {
-
                     Icon(
                         modifier = Modifier.size(20.dp),
                         painter = painterResource(

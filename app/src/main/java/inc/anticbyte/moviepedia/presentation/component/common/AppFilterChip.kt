@@ -40,13 +40,7 @@ fun AppFilterChip(
                     modifier = Modifier.animateContentSize(animationSpec = spring()),
                     selected = selectedIndex == index,
                     onClick = { onChipSelected(index) },
-                    label = { Text(chip) },
-                    leadingIcon = {
-                        if (selectedIndex == index) Icon(
-                            painter = painterResource(R.drawable.check_24px),
-                            contentDescription = ""
-                        )
-                    }, shape = MaterialTheme.shapes.small,
+                    label = { Text(chip) }, shape = MaterialTheme.shapes.small,
                     colors = FilterChipDefaults.filterChipColors(
                         selectedContainerColor = MaterialTheme.colorScheme.primary,
                         selectedLabelColor = MaterialTheme.colorScheme.onBackground,

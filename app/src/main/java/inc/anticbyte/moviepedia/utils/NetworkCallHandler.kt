@@ -1,6 +1,7 @@
 package inc.anticbyte.moviepedia.utils
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
@@ -27,3 +28,19 @@ suspend fun updateToken(token: String, context: Context) {
         println(it[stringPreferencesKey("token")])
     }
 }
+
+suspend fun saveLoginStatus(status: Boolean, context: Context) {
+    context.dataStore.edit {
+        it[booleanPreferencesKey("login_status")] = status
+    }
+    context.dataStore.data.collect {
+        it[booleanPreferencesKey("login_status")] ?: false
+    }
+}
+
+suspend fun storeWatchList(movieIds: MutableSet<String>, context: Context) {
+    context.dataStore.edit {
+        it[stringPreferencesKey("watch_list")] = movieIds.joinToString(",")
+    }
+}
+

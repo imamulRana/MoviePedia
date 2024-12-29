@@ -1,12 +1,12 @@
 package inc.anticbyte.moviepedia.presentation.screens.onboarding
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -18,15 +18,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.emptyPreferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
+import inc.anticbyte.moviepedia.utils.dataStore
 
 @Composable
-fun OnboardingScreen(modifier: Modifier = Modifier, buttonModifier: Modifier = Modifier) {
+fun OnboardingScreen(
+    modifier: Modifier = Modifier,
+    buttonModifier: Modifier = Modifier,
+    onContinueClick: () -> Unit
+) {
+    val context = LocalContext.current
+    val dataStore = context.dataStore.data.collectAsState(initial = emptyPreferences())
     Box(
         modifier = modifier.fillMaxSize()
     ) {
@@ -56,7 +67,13 @@ fun OnboardingScreen(modifier: Modifier = Modifier, buttonModifier: Modifier = M
                 .width(IntrinsicSize.Min)
                 .align(Alignment.BottomCenter)
         ) {
-            Button(modifier = buttonModifier, onClick = {}, shape = CardDefaults.shape) {
+            Button(modifier = buttonModifier, onClick = {
+                dataStore.value[stringPreferencesKey("watch_list")]
+                println("Hello"+dataStore.value[stringPreferencesKey("watch_list")])
+                Log.d("DataStoreWatchList",
+                    "OnboardingScreen: ${dataStore.value[stringPreferencesKey("watch_list")].toString()}"
+                )
+            }, shape = CardDefaults.shape) {
                 Text(
                     text = "Continue with E-Mail",
                     style = MaterialTheme.typography.titleSmall,
@@ -77,7 +94,11 @@ fun OnboardingScreen(modifier: Modifier = Modifier, buttonModifier: Modifier = M
                     style = MaterialTheme.typography.labelSmall
                 )
             }
-            OutlinedButton(modifier = buttonModifier, onClick = {}, shape = CardDefaults.shape) {
+            OutlinedButton(
+                modifier = buttonModifier,
+                onClick = onContinueClick,
+                shape = CardDefaults.shape
+            ) {
                 Text(
                     text = "Continue without registration",
                     style = MaterialTheme.typography.titleSmall
@@ -92,9 +113,9 @@ fun OnboardingScreen(modifier: Modifier = Modifier, buttonModifier: Modifier = M
 @Composable
 private fun DefPrev() {
     MoviePediaTheme {
-        OnboardingScreen(
-            modifier = Modifier.padding(16.dp),
-            buttonModifier = Modifier.fillMaxWidth()
-        )
+        /*OnboardingScreen(
+              modifier = Modifier.padding(16.dp),
+              buttonModifier = Modifier.fillMaxWidth()
+          )*/
     }
 }

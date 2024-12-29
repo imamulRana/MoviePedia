@@ -1,5 +1,7 @@
 package inc.anticbyte.moviepedia.domain.repo
 
+import inc.anticbyte.moviepedia.data.remote.dto.CastDetailDto
+import inc.anticbyte.moviepedia.data.remote.dto.MovieCreditDto
 import inc.anticbyte.moviepedia.data.remote.dto.MovieSearchDto
 import inc.anticbyte.moviepedia.data.remote.dto.WatchListMovieDto
 import inc.anticbyte.moviepedia.data.remote.movie.MovieDetailDto
@@ -18,4 +20,9 @@ interface NetworkRepository {
     suspend fun getMovieKeyWords(movieId: String): Result<List<MovieKeyWord>>
     suspend fun getMovieCredit(movieId: String): Result<List<MovieCast>>
     suspend fun getMovieBySearch(query: String): MovieSearchDto
+    suspend fun getMovieCastDetail(personId: String): CastDetailDto
+    suspend fun getMovieCastCredits(personId: String): MovieCreditDto
+
+    //post methods
+    suspend fun addOrRemoveMovieToWatchList(mediaId: Int, watchlist: Boolean): Result<Unit>
 }

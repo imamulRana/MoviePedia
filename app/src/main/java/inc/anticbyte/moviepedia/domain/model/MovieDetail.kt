@@ -11,6 +11,8 @@ data class MovieDetail(
     val moviePosterUrl: String = "",
     val movieBackdropUrl: String = "",
     val movieTagline: String = "",
+    val productionCompany: List<String> = emptyList(),
     val movieKeywords: List<String> = emptyList(),
-    val movieCasts: List<MovieCast> = emptyList()
+    val movieCasts: List<MovieCast> = emptyList(),
+    val isMovieInWatchList: Boolean = false
 )

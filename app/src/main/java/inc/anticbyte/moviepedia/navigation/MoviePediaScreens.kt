@@ -20,7 +20,7 @@ sealed class MoviePediaScreens {
     data object Search : MoviePediaScreens()
 
     @Serializable
-    data object Person : MoviePediaScreens()
+    data object Profile : MoviePediaScreens()
 
     @Serializable
     data object Trending : MoviePediaScreens()

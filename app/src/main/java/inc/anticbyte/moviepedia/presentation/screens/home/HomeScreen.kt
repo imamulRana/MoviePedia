@@ -11,12 +11,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import inc.anticbyte.moviepedia.R
 import inc.anticbyte.moviepedia.navigation.MoviePediaScreens
@@ -32,18 +32,15 @@ import inc.anticbyte.moviepedia.utils.AppTabItems
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(viewModel: MoviePediaViewModel, navController: NavController) {
-    val uiState by viewModel.homeUiState.collectAsState()
+    val uiState by viewModel.homeUiState.collectAsStateWithLifecycle()
     val scrollState = rememberScrollState()
 
     if (uiState.isLoading) {
         LoadingScreen()
-    } else if (uiState.error.isNotEmpty()) {
+    } else if (uiState.featuredMovie.isEmpty()) {
         ErrorScreen()
     } else {
-        Column(
-            modifier = Modifier.verticalScroll(scrollState),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
+        Column {
             TopAppBar(title = {
                 Text(
                     text = stringResource(id = R.string.app_name),
@@ -52,56 +49,76 @@ fun HomeScreen(viewModel: MoviePediaViewModel, navController: NavController) {
             }, actions = {
                 IconButton(onClick = {
                     viewModel.getMovieBySearch("")
-                    navController.navigate(MoviePediaScreens.Search)
+                    navController.navigate(MoviePediaScreens.Search) {
+                        launchSingleTop = true
+                    }
                 }) {
                     Icon(painter = painterResource(R.drawable.ic_search), contentDescription = "")
                 }
             })
-            AppCarousel(viewModel = viewModel, onMovieClick = {
-                viewModel.getMovieDetail(it)
-                navController.navigate(
-                    MoviePediaScreens.MovieDetail(it)
-                )
-            })
-            // Trending List Movies
 
-            ListTrendingMovie(
-                sectionTitle = R.string.trending_movies,
-                movies = uiState.trendingMovies,
-                navigateToScreenDetails = { movieId ->
-                    viewModel.getMovieDetail(movieId)
-                    navController.navigate(MoviePediaScreens.MovieDetail(movieId))
-                },
-                navigateToScreenTrending = {
-                    viewModel.getTrendingMovies(AppTabItems.DAY.timeWindow)
-                    navController.navigate(MoviePediaScreens.Trending)
+            Column(
+                modifier = Modifier.verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                AppCarousel(viewModel = viewModel, onMovieClick = {
+                    viewModel.getMovieDetail(it)
+                    navController.navigate(
+                        MoviePediaScreens.MovieDetail(it)
+                    ) {
+                        launchSingleTop = true
+                    }
                 })
+                // Trending List Movies
 
-            // Popular List Movies
+                ListTrendingMovie(
+                    sectionTitle = R.string.trending_movies,
+                    movies = uiState.trendingMovies,
+                    navigateToScreenDetails = { movieId ->
+                        viewModel.getMovieDetail(movieId)
+                        navController.navigate(MoviePediaScreens.MovieDetail(movieId)) {
+                            launchSingleTop = true
+                        }
+                    },
+                    navigateToScreenTrending = {
+                        viewModel.getTrendingMovies(AppTabItems.DAY.timeWindow)
+                        navController.navigate(MoviePediaScreens.Trending) {
+                            launchSingleTop = true
+                        }
+                    })
 
-            ListPopularMovie(
-                sectionTitle = R.string.popular_movies,
-                movies = uiState.popularMovies,
-                navigateToScreenDetails = { movieId ->
-                    viewModel.getMovieDetail(movieId)
-                    navController.navigate(MoviePediaScreens.MovieDetail(movieId))
-                }
-            )
+                // Popular List Movies
 
-            // Now Playing List Movies
+                ListPopularMovie(
+                    sectionTitle = R.string.popular_movies,
+                    movies = uiState.popularMovies,
+                    navigateToScreenDetails = { movieId ->
+                        viewModel.getMovieDetail(movieId)
+                        navController.navigate(MoviePediaScreens.MovieDetail(movieId)) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
 
-            ListNowPlayingMovies(
-                sectionTitle = R.string.now_playing,
-                movies = uiState.nowPlayingMovies,
-                navigateToScreenDetails = { movieId ->
-                    viewModel.getMovieDetail(movieId)
-                    navController.navigate(MoviePediaScreens.MovieDetail(movieId))
-                },
-                navigateToScreenNowPlaying = {
-                    viewModel.getNowPlayingMovies()
-                    navController.navigate(MoviePediaScreens.NowPlaying)
-                }
-            )
+                // Now Playing List Movies
+
+                ListNowPlayingMovies(
+                    sectionTitle = R.string.now_playing,
+                    movies = uiState.nowPlayingMovies,
+                    navigateToScreenDetails = { movieId ->
+                        viewModel.getMovieDetail(movieId)
+                        navController.navigate(MoviePediaScreens.MovieDetail(movieId)) {
+                            launchSingleTop = true
+                        }
+                    },
+                    navigateToScreenNowPlaying = {
+                        viewModel.getNowPlayingMovies()
+                        navController.navigate(MoviePediaScreens.NowPlaying) {
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
         }
     }
 }

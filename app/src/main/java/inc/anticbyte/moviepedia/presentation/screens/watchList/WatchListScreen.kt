@@ -12,33 +12,40 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import inc.anticbyte.moviepedia.navigation.MoviePediaScreens
 import inc.anticbyte.moviepedia.presentation.component.item.ItemWatchList
 import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
 import inc.anticbyte.moviepedia.presentation.screens.LoadingScreen
 import inc.anticbyte.moviepedia.presentation.screens.MoviePediaViewModel
-import inc.anticbyte.moviepedia.utils.updateToken
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
 
-/**
- * WatchList Screen For Movies [viewModel]
- * @return [WatchListScreen]
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WatchListScreen(viewModel: MoviePediaViewModel, navController: NavController) {
-    val movies by viewModel.watchListUiState.collectAsState()
-    val context = LocalContext.current
+    val movies by viewModel.watchListUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        snapshotFlow { movies.movies }
+            .distinctUntilChanged()
+            .collectLatest {
+                viewModel.getMovieWatchList()
+            }
+    }
+
     if (movies.isLoading) {
         LoadingScreen()
-    } else if (movies.error.isNotEmpty()) {
-        ErrorScreen()
+    } else if (movies.movies.isEmpty()) {
+        ErrorScreen(onRetry = {
+            viewModel.getMovieWatchList()
+        })
     } else {
         Column {
             TopAppBar(title = {
@@ -57,11 +64,11 @@ fun WatchListScreen(viewModel: MoviePediaViewModel, navController: NavController
                     bottom = 8.dp
                 )
             ) {
-                items(movies.movies) { movie ->
+                items(movies.movies, key = { it.movieId }) { movie ->
                     ItemWatchList(movieWatchList = movie, onClick = {
                         viewModel.getMovieDetail(movie.movieId)
                         navController.navigate(MoviePediaScreens.MovieDetail(movie.movieId))
-                    })
+                    }, modifier = Modifier.animateItem())
                 }
             }
         }

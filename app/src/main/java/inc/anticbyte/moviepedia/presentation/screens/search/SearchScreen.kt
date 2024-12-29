@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.FilterChipDefaults
@@ -22,7 +23,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import inc.anticbyte.moviepedia.R
 import inc.anticbyte.moviepedia.presentation.component.item.ItemSearch
 import inc.anticbyte.moviepedia.presentation.screens.ErrorScreen
@@ -54,10 +55,11 @@ fun SearchScreen(
     onMovieClick: (Int) -> Unit,
     onBackClick: () -> Unit
 ) {
-    val searchUiState by viewModel.searchUiState.collectAsState()
+    val searchUiState by viewModel.searchUiState.collectAsStateWithLifecycle()
 
     val (query, setQuery) = rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
+    val listState = rememberLazyListState()
 
     LaunchedEffect(query) {
         snapshotFlow { query }
@@ -134,20 +136,24 @@ fun SearchScreen(
             LazyColumn(
                 modifier = Modifier.animateContentSize(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                contentPadding = PaddingValues(vertical = 8.dp),
+                state = listState
             ) {
                 if (query.isNotEmpty())
                     items(searchUiState.movies) { search ->
-                        ItemSearch(modifier= Modifier.animateItem(),
+                        ItemSearch(modifier = Modifier.animateItem(),
                             watchList = search, onMovieClick = {
-                            viewModel.getMovieDetail(search.movieId)
-                            onMovieClick(search.movieId)
-                        })
+                                viewModel.getMovieDetail(search.movieId)
+                                onMovieClick(search.movieId)
+                            })
                     } else {
                     items(searchUiState.popularSearch) { popular ->
-                        ItemSearch(modifier= Modifier.animateItem(),watchList = popular, onMovieClick = {
-                            onMovieClick(popular.movieId)
-                        })
+                        ItemSearch(
+                            modifier = Modifier.animateItem(),
+                            watchList = popular,
+                            onMovieClick = {
+                                onMovieClick(popular.movieId)
+                            })
                     }
                 }
             }

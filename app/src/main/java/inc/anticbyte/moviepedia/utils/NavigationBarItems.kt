@@ -29,7 +29,7 @@ val navBarItems = listOf(
         "Profile",
         R.drawable.ic_person_outlined,
         R.drawable.ic_person_filled,
-        MoviePediaScreens.Person
+        MoviePediaScreens.Profile
     )
 )
 

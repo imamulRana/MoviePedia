@@ -6,45 +6,65 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.SnackbarDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import inc.anticbyte.moviepedia.R
+import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
 
 @Composable
-fun ErrorScreen(modifier: Modifier = Modifier, exception: Exception = Exception()) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Column(
-            modifier = modifier.align(Alignment.Center)
-        ) {
-
-            Image(
-                modifier = modifier
-                    .size(200.dp),
-                painter = painterResource(id = R.drawable.error_robot),
-                contentDescription = null
-            )
-            Text(
-                text = exception.message ?: "Something went wrong",
-            )
+fun ErrorScreen(
+    modifier: Modifier = Modifier,
+    exception: Exception = Exception(),
+    onRetry: () -> Unit = {}
+) {
+    val snackBarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(Unit) {
+        val result = snackBarHostState.showSnackbar(
+            message = exception.message ?: "Something went wrong",
+            actionLabel = "Retry",
+        )
+        if (result == SnackbarResult.ActionPerformed) {
+            onRetry()
         }
-        Button(
-            modifier = modifier.align(Alignment.BottomCenter),
-            onClick = {},
-            shape = SnackbarDefaults.shape
+    }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackBarHostState, snackbar = { Snackbar(snackbarData = it) })
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize()
         ) {
-            Text(text = stringResource(id = R.string.btn_retry).uppercase())
+            Column(
+                modifier = modifier.align(Alignment.Center),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    modifier = modifier
+                        .size(300.dp),
+                    painter = painterResource(id = R.drawable.bg_no_data),
+                    contentDescription = null
+                )
+                Text(
+                    text = exception.message ?: "Something went wrong",
+                )
+            }
         }
     }
 }
@@ -52,5 +72,7 @@ fun ErrorScreen(modifier: Modifier = Modifier, exception: Exception = Exception(
 @Preview(showBackground = true)
 @Composable
 private fun DefPrev() {
-//    ErrorScreen()
+    MoviePediaTheme {
+        ErrorScreen()
+    }
 }

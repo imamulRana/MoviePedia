@@ -4,8 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
@@ -16,22 +14,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import inc.anticbyte.moviepedia.R
 import inc.anticbyte.moviepedia.domain.model.MovieCast
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun ItemCastsCard(cast: MovieCast) {
+fun ItemCastsCard(cast: MovieCast, onCastClick: (Int) -> Unit = {}) {
     Column(
         modifier = Modifier
             .clip(CardDefaults.shape)
-            .clickable { }
+            .clickable { onCastClick(cast.id) }
             .size(100.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -63,6 +58,6 @@ fun ItemCastsCard(cast: MovieCast) {
 @Composable
 private fun DefPrev() {
     MoviePediaTheme {
-        ItemCastsCard(cast = MovieCast(0, "name", "profile_path", "character"))
+//        ItemCastsCard(cast = MovieCast(0, "name", "profile_path", "character"))
     }
 }
