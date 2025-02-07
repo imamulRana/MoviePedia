@@ -6,6 +6,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import inc.anticbyte.moviepedia.data.repo.NetworkRepositoryImpl
+import inc.anticbyte.moviepedia.data.repo.PagingRepositoryImpl
+import inc.anticbyte.moviepedia.domain.repo.NetworkRepository
+import inc.anticbyte.moviepedia.domain.repo.PagingRepository
 import inc.anticbyte.moviepedia.utils.access_token
 import inc.anticbyte.moviepedia.utils.app_base_url
 import io.ktor.client.HttpClient
@@ -21,6 +25,7 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.serialization.json.Json
 import java.io.File
 import javax.inject.Singleton
@@ -56,4 +61,17 @@ object NetworkModule {
             }
         }
     }
+
+    @Singleton
+    @Provides
+    fun provideNetworkRepo(
+        ktorClient: HttpClient,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher
+    ): NetworkRepository = NetworkRepositoryImpl(ioDispatcher, ktorClient)
+
+    @Singleton
+    @Provides
+    fun providePagingRepo(
+        networkRepository: NetworkRepository
+    ): PagingRepository = PagingRepositoryImpl(networkRepository)
 }

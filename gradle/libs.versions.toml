@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.1"
+agp = "8.8.0"
 coilCompose = "2.7.0"
 datastorePreferences = "1.1.1"
 kotlin = "2.0.10"
@@ -7,16 +7,16 @@ coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-lifecycleRuntimeKtx = "2.8.6"
+lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.10.00"
+composeBom = "2024.11.00"
 hiltAndroid = "2.52"
 ksp = "2.0.10-1.0.24"
 ktor = "2.3.12"
 slf4jAndroid = "1.7.36"
 androidxHilt = "1.2.0"
-composeNavigation = "2.8.3"
-paging = "3.3.2"
+composeNavigation = "2.8.4"
+paging = "3.3.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

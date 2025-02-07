@@ -34,8 +34,8 @@ import javax.inject.Inject
 /**
  * Implemented Interface of [NetworkRepository]
  */
-class NetworkRepositoryImpl @Inject constructor(
-    @IoDispatcher private val io: CoroutineDispatcher,
+class NetworkRepositoryImpl(
+    private val io: CoroutineDispatcher,
     private val ktorClient: HttpClient
 ) : NetworkRepository {
 

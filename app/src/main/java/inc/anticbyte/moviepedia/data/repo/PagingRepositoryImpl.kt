@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
-class PagingRepositoryImpl @Inject constructor(
+class PagingRepositoryImpl (
     private val networkRepository: NetworkRepository
 ) : PagingRepository {
     override fun getTrendingMovies(timeWindow: String): Flow<PagingData<Movie>> {

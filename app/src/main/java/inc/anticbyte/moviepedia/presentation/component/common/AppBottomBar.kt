@@ -30,6 +30,7 @@ import inc.anticbyte.moviepedia.navigation.MoviePediaScreens
 import inc.anticbyte.moviepedia.presentation.screens.MoviePediaViewModel
 import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
 import inc.anticbyte.moviepedia.utils.navBarItems
+import kotlin.random.Random
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

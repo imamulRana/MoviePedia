@@ -30,23 +30,3 @@ class GetTrendingMovieInitUseCase @Inject constructor(
             }
         }
 }
-
-
-
-
-/*
-class GetTrendingMovieUseCase @Inject constructor(
-    private val repository: PagingRepository,
-    @IoDispatcher private val io: CoroutineDispatcher
-) {
-    suspend operator fun invoke(
-        timeWindow: String = "day",
-    ): RequestState<Flow<PagingData<Movie>>> =
-        withContext(io) {
-            runCatching {
-                RequestState.Success(repository.getTrendingMovies(timeWindow = timeWindow))
-            }.getOrElse {
-                RequestState.Error(it.localizedMessage ?: "Something went wrong")
-            }
-        }
-}*/

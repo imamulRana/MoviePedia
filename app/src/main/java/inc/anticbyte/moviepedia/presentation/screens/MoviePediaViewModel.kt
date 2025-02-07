@@ -6,17 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import inc.anticbyte.moviepedia.domain.model.Movie
-import inc.anticbyte.moviepedia.domain.usecase.GetMovieBySearchUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetMovieCastDetailUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetMovieDetailUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetMovieWatchListUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetNowPlayingMovieInitUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetNowPlayingMovieUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetPopularMovieUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetTopSearchMovieUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetTrendingMovieInitUseCase
-import inc.anticbyte.moviepedia.domain.usecase.GetTrendingMovieUseCase
-import inc.anticbyte.moviepedia.domain.usecase.PostMovieStatusToWatchListUseCase
+import inc.anticbyte.moviepedia.domain.usecase.NetworkRepositoryUseCases
 import inc.anticbyte.moviepedia.presentation.screens.castDetail.CastDetailUiState
 import inc.anticbyte.moviepedia.presentation.screens.home.HomeScreenUiState
 import inc.anticbyte.moviepedia.presentation.screens.movieDetail.MovieDetailScreenUiState
@@ -36,17 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MoviePediaViewModel @Inject constructor(
-    private val getTrendingMovieInitUseCase: GetTrendingMovieInitUseCase,
-    private val getMovieDetailUseCase: GetMovieDetailUseCase,
-    private val getPopularMovieUseCase: GetPopularMovieUseCase,
-    private val getNowPlayingMovieInitUseCase: GetNowPlayingMovieInitUseCase,
-    private val getMovieWatchListUseCase: GetMovieWatchListUseCase,
-    private val getMovieBySearchUseCase: GetMovieBySearchUseCase,
-    private val getTopSearchMovieUseCase: GetTopSearchMovieUseCase,
-    private val getTrendingMovieUseCase: GetTrendingMovieUseCase,
-    private val getNowPlayingMovieUseCase: GetNowPlayingMovieUseCase,
-    private val postMovieStatusToWatchListUseCase: PostMovieStatusToWatchListUseCase,
-    private val getMovieCastDetailUseCase: GetMovieCastDetailUseCase
+    private val networkRepositoryUseCases: NetworkRepositoryUseCases
 ) : ViewModel() {
 
     init {
@@ -62,7 +42,7 @@ class MoviePediaViewModel @Inject constructor(
 
     private fun getFeaturedMovieInit() {
         viewModelScope.launch {
-            val response = getNowPlayingMovieInitUseCase(onLoading = {
+            val response = networkRepositoryUseCases.nowPlayingMovieInitUseCase(onLoading = {
                 _homeUiState.update { home -> home.copy(isLoading = true) }
             })
             response.fold(onSuccess = {
@@ -82,7 +62,8 @@ class MoviePediaViewModel @Inject constructor(
     private fun getTrendingMoviesInit(timeWindow: String = "day") {
         viewModelScope.launch {
             RequestState.Loading
-            when (val movie = getTrendingMovieInitUseCase(timeWindow = timeWindow)) {
+            when (val movie =
+                networkRepositoryUseCases.getTrendingMovieInitUseCase(timeWindow = timeWindow)) {
                 is RequestState.Error -> {
                     _homeUiState.value = _homeUiState.value.copy(
                         isLoading = false,
@@ -109,7 +90,7 @@ class MoviePediaViewModel @Inject constructor(
     private fun getPopularMoviesInit() {
         viewModelScope.launch {
             RequestState.Loading
-            when (val movie = getPopularMovieUseCase()) {
+            when (val movie = networkRepositoryUseCases.getPopularMovies()) {
                 RequestState.Loading -> {
                     _homeUiState.value = _homeUiState.value.copy(
                         isLoading = true
@@ -135,7 +116,7 @@ class MoviePediaViewModel @Inject constructor(
 
     private fun getNowPlayingMoviesInit() {
         viewModelScope.launch {
-            val response = getNowPlayingMovieInitUseCase(onLoading = {
+            val response = networkRepositoryUseCases.nowPlayingMovieInitUseCase(onLoading = {
                 _homeUiState.update { home -> home.copy(isLoading = true) }
             })
             response.fold(
@@ -166,9 +147,11 @@ class MoviePediaViewModel @Inject constructor(
 
     fun getMovieDetail(movieId: Int) {
         viewModelScope.launch {
-            val response = getMovieDetailUseCase(movieId = movieId.toString(), onLoading = {
-                _movieDetailUiState.update { detail -> detail.copy(isLoading = true) }
-            })
+            val response = networkRepositoryUseCases.getMovieDetails(
+                movieId = movieId.toString(),
+                onLoading = {
+                    _movieDetailUiState.update { detail -> detail.copy(isLoading = true) }
+                })
             response.fold(onSuccess = {
                 _movieDetailUiState.update { detail ->
                     detail.copy(
@@ -193,9 +176,8 @@ class MoviePediaViewModel @Inject constructor(
 
     fun getMovieWatchList() {
         viewModelScope.launch {
-            val response = getMovieWatchListUseCase(
-                onLoading = {
-                }
+            val response = networkRepositoryUseCases.getWatchListMovies(
+                onLoading = { }
             )
             response.fold(onSuccess = {
                 _watchListUiState.value = _watchListUiState.value.copy(
@@ -219,10 +201,10 @@ class MoviePediaViewModel @Inject constructor(
 
     fun getMovieBySearch(query: String) {
         viewModelScope.launch {
-            val getSearch = getMovieBySearchUseCase(query, onLoading = {
+            val getSearch = networkRepositoryUseCases.getMovieBySearchUseCase(query, onLoading = {
                 _searchUiState.update { it.copy(isLoading = true) }
             })
-            val getTopSearch = getTopSearchMovieUseCase(onLoading = {
+            val getTopSearch = networkRepositoryUseCases.getTopSearchMovieUseCase(onLoading = {
                 _searchUiState.update { it.copy(isLoading = true) }
             })
 
@@ -269,7 +251,7 @@ class MoviePediaViewModel @Inject constructor(
     fun getTrendingMovies(timeWindow: String) {
         viewModelScope.launch {
             _trendingMovies.value = PagingData.empty()
-            getTrendingMovieUseCase(timeWindow, onLoading = {
+            networkRepositoryUseCases.getTrendingMovieUseCase(timeWindow, onLoading = {
                 _trendingUiState.update { it.copy(isLoading = true) }
             }).cachedIn(viewModelScope)
                 .distinctUntilChanged().collect {
@@ -292,7 +274,7 @@ class MoviePediaViewModel @Inject constructor(
     fun getNowPlayingMovies() {
         viewModelScope.launch {
             _nowPlayingMovies.value = PagingData.empty()
-            getNowPlayingMovieUseCase(onLoading = {
+            networkRepositoryUseCases.getNowPlayingMovieUseCase(onLoading = {
                 _nowPlayingUiState.update { it.copy(isLoading = true) }
             }).cachedIn(viewModelScope)
                 .distinctUntilChanged().collect {
@@ -308,7 +290,7 @@ class MoviePediaViewModel @Inject constructor(
 
     fun postAddOrRemoveWatchList(movieId: Int, watchList: Boolean, onSuccess: () -> Unit) {
         viewModelScope.launch {
-            val response = postMovieStatusToWatchListUseCase(movieId, watchList, onLoading = {
+            val response = networkRepositoryUseCases.postMovieStatusToWatchListUseCase(movieId, watchList, onLoading = {
 //                _movieDetailUiState.update { detail -> detail.copy(isLoading = true) }
             })
             response.fold(onSuccess = {
@@ -339,7 +321,7 @@ class MoviePediaViewModel @Inject constructor(
 
     fun getCastDetail(personId: Int) {
         viewModelScope.launch {
-            val response = getMovieCastDetailUseCase(personId.toString(), onLoading = {
+            val response = networkRepositoryUseCases.getMovieCastDetailUseCase(personId.toString(), onLoading = {
                 _castDetailUiState.update { detail -> detail.copy(isLoading = true) }
             })
             response.fold(onSuccess = {
