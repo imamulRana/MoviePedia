@@ -4,6 +4,7 @@ import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
 import inc.anticbyte.moviepedia.di.IoDispatcher
 import inc.anticbyte.moviepedia.domain.model.MovieDetail
+import inc.anticbyte.moviepedia.domain.repo.LocalRepository
 import inc.anticbyte.moviepedia.domain.repo.NetworkRepository
 import inc.anticbyte.moviepedia.utils.storeWatchList
 import kotlinx.coroutines.CoroutineDispatcher
@@ -13,7 +14,8 @@ import javax.inject.Inject
 class GetMovieDetailUseCase @Inject constructor(
     private val repository: NetworkRepository,
     @IoDispatcher private val io: CoroutineDispatcher,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val localRepository: LocalRepository
 ) {
     suspend operator fun invoke(movieId: String, onLoading: () -> Unit = {}): Result<MovieDetail> {
         return withContext(io) {
@@ -34,7 +36,7 @@ class GetMovieDetailUseCase @Inject constructor(
                         .map { it.movieId.toString() }
 
                 //store the actual movie id in the shared preference
-                storeWatchList(movieIds = movieWatchList.map { it }.toMutableSet(), context)
+                localRepository.storeWatchList(movieWatchList.map { it }.toMutableSet())
 
                 response.copy(
                     movieKeywords = movieKeyWords,

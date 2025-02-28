@@ -6,6 +6,17 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.util.Locale
 
+/**
+ * Data Transfer Object (DTO) representing a page of movies from a watchlist.
+ *
+ * This class is used to deserialize JSON responses from an API that provides
+ * paginated data about movies in a user's watchlist.
+ *
+ * @property page The current page number of the results.
+ * @property results A list of [Result] objects, each representing a movie in the watchlist.
+ * @property totalPages The total number of pages available for the watchlist.
+ * @property totalResults The total number of movies in the watchlist.
+ */
 @Serializable
 data class WatchListMovieDto(
     @SerialName("page")

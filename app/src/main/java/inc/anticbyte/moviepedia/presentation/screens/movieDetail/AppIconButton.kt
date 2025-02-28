@@ -31,7 +31,7 @@ fun AppIconButton(
 ) {
     val state = rememberTooltipState()
     TooltipBox(
-        positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+        positionProvider = TooltipDefaults.rememberTooltipPositionProvider(),
         state = state,
         tooltip = {
             PlainTooltip(

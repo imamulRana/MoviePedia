@@ -1,11 +1,14 @@
 package inc.anticbyte.moviepedia.presentation.screens
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import inc.anticbyte.moviepedia.domain.model.Movie
+import inc.anticbyte.moviepedia.domain.repo.LocalRepository
 import inc.anticbyte.moviepedia.domain.usecase.NetworkRepositoryUseCases
 import inc.anticbyte.moviepedia.presentation.screens.castDetail.CastDetailUiState
 import inc.anticbyte.moviepedia.presentation.screens.home.HomeScreenUiState
@@ -15,18 +18,22 @@ import inc.anticbyte.moviepedia.presentation.screens.search.SearchUiState
 import inc.anticbyte.moviepedia.presentation.screens.trending.TrendingScreenUiState
 import inc.anticbyte.moviepedia.presentation.screens.watchList.WatchListUiState
 import inc.anticbyte.moviepedia.utils.RequestState
+import inc.anticbyte.moviepedia.utils.dataStore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MoviePediaViewModel @Inject constructor(
-    private val networkRepositoryUseCases: NetworkRepositoryUseCases
+    private val networkRepositoryUseCases: NetworkRepositoryUseCases,
+    private val localRepository: LocalRepository,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     init {

@@ -34,7 +34,7 @@ suspend fun saveLoginStatus(status: Boolean, context: Context) {
         it[booleanPreferencesKey("login_status")] = status
     }
     context.dataStore.data.collect {
-        it[booleanPreferencesKey("login_status")] ?: false
+        it[booleanPreferencesKey("login_status")] == true
     }
 }
 

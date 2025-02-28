@@ -6,8 +6,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import inc.anticbyte.moviepedia.data.local.LocalRepositoryImpl
 import inc.anticbyte.moviepedia.data.repo.NetworkRepositoryImpl
 import inc.anticbyte.moviepedia.data.repo.PagingRepositoryImpl
+import inc.anticbyte.moviepedia.domain.repo.LocalRepository
 import inc.anticbyte.moviepedia.domain.repo.NetworkRepository
 import inc.anticbyte.moviepedia.domain.repo.PagingRepository
 import inc.anticbyte.moviepedia.utils.access_token
@@ -56,9 +58,6 @@ object NetworkModule {
                     ignoreUnknownKeys = true
                 })
             }
-            install(HttpCache) {
-                publicStorage(FileStorage(File(context.cacheDir, "http_cache")))
-            }
         }
     }
 
@@ -74,4 +73,10 @@ object NetworkModule {
     fun providePagingRepo(
         networkRepository: NetworkRepository
     ): PagingRepository = PagingRepositoryImpl(networkRepository)
+
+    @Singleton
+    @Provides
+    fun provideLocalRepo(
+        @ApplicationContext context: Context
+    ): LocalRepository = LocalRepositoryImpl(context)
 }
