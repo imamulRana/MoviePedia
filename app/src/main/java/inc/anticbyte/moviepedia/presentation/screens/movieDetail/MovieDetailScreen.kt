@@ -135,9 +135,7 @@ fun MovieDetailScreen(
                                         )
                                         type = "text/plain"
                                     }
-                                context.startActivity(
-                                    Intent.createChooser(intent, "Share")
-                                )
+                                context.startActivity(Intent.createChooser(intent, "Share"))
                             },
                             painterResource = R.drawable.ic_share,
                             tooltipText = "Share",
