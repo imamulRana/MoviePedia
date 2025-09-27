@@ -10,13 +10,13 @@ import inc.anticbyte.moviepedia.R
 
 val fontFamily =
     FontFamily(
-        Font(R.font.albert_sans_regular),
-        Font(R.font.albert_sans_medium, FontWeight.Medium),
-        Font(R.font.albert_sans_bold, FontWeight.Bold)
+        Font(R.font.plus_jakarta_sans_regular,FontWeight.Normal),
+        Font(R.font.plus_jakarta_sans_medium, FontWeight.Medium),
+        Font(R.font.plus_jakarta_sans_bold, FontWeight.Bold)
     )
 
 // Display
-val AlbertSansTypography = Typography(
+val JakartaSansTypography = Typography(
     displayLarge = TextStyle(
         fontFamily = fontFamily,
         fontWeight = FontWeight.Normal,
@@ -77,7 +77,7 @@ val AlbertSansTypography = Typography(
     labelLarge = TextStyle(
         fontFamily = fontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp, lineHeight = 20.sp
+        fontSize = 10.sp, lineHeight = 14.sp
     ),
     labelMedium = TextStyle(
         fontFamily = fontFamily,

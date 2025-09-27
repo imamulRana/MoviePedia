@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "inc.anticbyte.moviepedia"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "inc.anticbyte.moviepedia"
         minSdk = 27
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -61,12 +61,19 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.viewmodel)
+    //navigation
+    implementation(libs.androidx.compose.navigation)
     //hilt-android
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     //ktor
     implementation(libs.bundles.ktor)
     implementation(libs.coil.compose)
+    //preferences-datastore
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.datastore.preferences.core)
+    //paging3
+    implementation(libs.bundles.paging)
     //test
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

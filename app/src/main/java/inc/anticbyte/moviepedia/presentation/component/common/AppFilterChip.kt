@@ -1,0 +1,55 @@
+package inc.anticbyte.moviepedia.presentation.component.common
+
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import inc.anticbyte.moviepedia.presentation.theme.MoviePediaTheme
+
+@Composable
+fun AppFilterChip(
+    modifier: Modifier = Modifier,
+    chips: List<String>,
+    selectedIndex: Int,
+    onChipSelected: (Int) -> Unit
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        chips.forEachIndexed { index, chip ->
+            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                FilterChip(
+                    modifier = Modifier.animateContentSize(animationSpec = spring()),
+                    selected = selectedIndex == index,
+                    onClick = { onChipSelected(index) },
+                    label = { Text(chip) }, shape = MaterialTheme.shapes.small,
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onBackground,
+                        selectedLeadingIconColor = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DefPrev() {
+    MoviePediaTheme {
+//        AppFilterChip(chips = listOf(""))
+    }
+}
